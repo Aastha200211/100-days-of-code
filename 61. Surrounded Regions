@@ -1,0 +1,42 @@
+from typing import List
+from collections import deque
+
+class Solution:
+    def solve(self, board: List[List[str]]) -> None:
+        if not board:
+            return
+        
+        rows, cols = len(board), len(board[0])
+        
+        def bfs(r, c):
+            q = deque([(r, c)])
+            board[r][c] = "#"   # mark safe
+            while q:
+                row, col = q.popleft()
+                for dr, dc in [(1,0), (-1,0), (0,1), (0,-1)]:
+                    nr, nc = row + dr, col + dc
+                    if 0 <= nr < rows and 0 <= nc < cols and board[nr][nc] == "O":
+                        board[nr][nc] = "#"
+                        q.append((nr, nc))
+        
+        # Step 1: Mark all 'O' connected to border
+        for r in range(rows):
+            if board[r][0] == "O":
+                bfs(r, 0)
+            if board[r][cols-1] == "O":
+                bfs(r, cols-1)
+        for c in range(cols):
+            if board[0][c] == "O":
+                bfs(0, c)
+            if board[rows-1][c] == "O":
+                bfs(rows-1, c)
+        
+        # Step 2: Flip board
+        for r in range(rows):
+            for c in range(cols):
+                if board[r][c] == "O":
+                    board[r][c] = "X"   # captured
+                elif board[r][c] == "#":
+                    board[r][c] = "O"   # restore safe
+
+        
